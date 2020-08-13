@@ -5,17 +5,36 @@ namespace App\Controller;
 use App\Entity\Round;
 use App\Entity\Spin;
 use App\Entity\User;
+use App\Exception\UserNotSetException;
+use App\Service\RouletteSpinner;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RouletteSpinController extends JsonController
 {
     /**
+     * @var RouletteSpinner
+     */
+    protected $rouletteSpinner;
+
+    /**
+     * RouletteSpinController constructor.
+     * @param RouletteSpinner $rouletteSpinner
+     */
+    public function __construct(RouletteSpinner $rouletteSpinner)
+    {
+        parent::__construct();
+        $this->rouletteSpinner = $rouletteSpinner;
+    }
+
+    /**
      * @Route("/roulette/spin", name="storeRouletteSpin", methods={"POST"})
      *
      * @param Request $request
      * @return JsonResponse
+     *
      */
     public function store(Request $request)
     {
@@ -24,38 +43,13 @@ class RouletteSpinController extends JsonController
             "api_key" => $request->get('api_key')
         ]);
 
-        if ($user) {
-            // if user have no active rounds, create new one
-            if (null === ($round = $user->getActiveRound())) {
-                $round = new Round;
-                $round->setUserId($user);
-            }
-
-            // create spin
-            $spin = new Spin;
-
-            // Generating random cell to drop
-
-            if ($availableCells = $round->getAvailableCells()) {
-                $randomCell = $availableCells[array_rand($availableCells)];
-                $spin->setDroppedCell($randomCell);
-                // set jackpot
-                $spin->setIsJackpot(false);
-            } else {
-                $spin->setIsJackpot(true);
-            }
-
-            // persist data
-            $this->getDoctrine()->getManager()->persist($spin);
-
-            $round->addSpin($spin);
-            $this->getDoctrine()->getManager()->persist($round);
-
-            $this->getDoctrine()->getManager()->persist($user);
-
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->responseEntity($round);
+        try {
+            $round = $this->rouletteSpinner
+                ->setUser($user)
+                ->spin();
+        } catch (UserNotSetException $e) {
+            throw new BadRequestHttpException($e->getMessage());
         }
+        return $this->responseEntity($round);
     }
 }

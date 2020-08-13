@@ -31,7 +31,7 @@ class User
     private $api_key;
 
     /**
-     * @ORM\OneToMany(targetEntity=Round::class, mappedBy="user_id", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity=Round::class, mappedBy="user", fetch="EAGER")
      */
     private $rounds;
 
@@ -81,7 +81,7 @@ class User
     {
         if (!$this->rounds->contains($round)) {
             $this->rounds[] = $round;
-            $round->setUserId($this);
+            $round->setUser($this);
         }
 
         return $this;
@@ -92,8 +92,8 @@ class User
         if ($this->rounds->contains($round)) {
             $this->rounds->removeElement($round);
             // set the owning side to null (unless already changed)
-            if ($round->getUserId() === $this) {
-                $round->setUserId(null);
+            if ($round->getUser() === $this) {
+                $round->setUser(null);
             }
         }
 

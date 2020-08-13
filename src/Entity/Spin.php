@@ -24,7 +24,7 @@ class Spin
      * @ORM\ManyToOne(targetEntity=Round::class, inversedBy="spins")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $round_id;
+    private $round;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -34,21 +34,21 @@ class Spin
     /**
      * @ORM\Column(type="boolean")
      */
-    private $is_jackpot;
+    private $is_jackpot = false;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getRoundId(): ?Round
+    public function getRound(): ?Round
     {
-        return $this->round_id;
+        return $this->round;
     }
 
-    public function setRoundId(?Round $round_id): self
+    public function setRound(?Round $round): self
     {
-        $this->round_id = $round_id;
+        $this->round = $round;
 
         return $this;
     }

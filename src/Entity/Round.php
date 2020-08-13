@@ -23,10 +23,10 @@ class Round
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="rounds")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user_id;
+    private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity=Spin::class, mappedBy="round_id")
+     * @ORM\OneToMany(targetEntity=Spin::class, mappedBy="round")
      */
     private $spins;
 
@@ -40,14 +40,14 @@ class Round
         return $this->id;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?User $user_id): self
+    public function setUser(?User $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
@@ -64,7 +64,7 @@ class Round
     {
         if (!$this->spins->contains($spin)) {
             $this->spins[] = $spin;
-            $spin->setRoundId($this);
+            $spin->setRound($this);
         }
 
         return $this;
@@ -75,8 +75,8 @@ class Round
         if ($this->spins->contains($spin)) {
             $this->spins->removeElement($spin);
             // set the owning side to null (unless already changed)
-            if ($spin->getRoundId() === $this) {
-                $spin->setRoundId(null);
+            if ($spin->getRound() === $this) {
+                $spin->setRound(null);
             }
         }
 
@@ -94,12 +94,23 @@ class Round
         return $lastSpin->getIsJackpot();
     }
 
-    public function getAvailableCells()
+    /**
+     * @return array
+     */
+    public function getAvailableCells(): array
     {
         $lockedCells = $this->spins->map(function (Spin $spin) {
             return $spin->getDroppedCell();
         })->toArray();
 
         return array_diff(Spin::CELLS, $lockedCells);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAvailableCells(): bool
+    {
+        return count($this->getAvailableCells()) > 0;
     }
 }
