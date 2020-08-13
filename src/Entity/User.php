@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,6 +29,16 @@ class User
      * @ORM\Column(type="string", length=255)
      */
     private $api_key;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Round::class, mappedBy="user_id", fetch="EAGER")
+     */
+    private $rounds;
+
+    public function __construct()
+    {
+        $this->rounds = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -55,5 +67,48 @@ class User
         $this->api_key = $api_key;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Round[]
+     */
+    public function getRounds(): Collection
+    {
+        return $this->rounds;
+    }
+
+    public function addRound(Round $round): self
+    {
+        if (!$this->rounds->contains($round)) {
+            $this->rounds[] = $round;
+            $round->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRound(Round $round): self
+    {
+        if ($this->rounds->contains($round)) {
+            $this->rounds->removeElement($round);
+            // set the owning side to null (unless already changed)
+            if ($round->getUserId() === $this) {
+                $round->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Round|null
+     */
+    public function getActiveRound(): ?Round
+    {
+        $activeRound = $this->rounds->filter(function (Round $round) {
+            return !$round->isOver();
+        })->first();
+
+        return $activeRound !== false ? $activeRound : null;
     }
 }
