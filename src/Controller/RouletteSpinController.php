@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class RouletteSpinController extends JsonController
 {
@@ -50,6 +51,7 @@ class RouletteSpinController extends JsonController
         } catch (UserNotSetException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
-        return $this->responseEntity($round);
+
+        return $this->responseEntity($round, ['user']);
     }
 }
