@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: roulette_nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: unless-stopped
+    depends_on:
+      - php
+
+  php:
+    build: ./
+    container_name: roulette_php
+    volumes:
+      - ./:/var/www
+      - ./docker/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - db
+    links:
+      - db:database_host
+    restart: unless-stopped
+
+  db:
+    image: postgres:9.6
+    ports:
+      - '5435:5432'
+    container_name: 'postgresql'
+    working_dir: /app
+    restart: always
+    environment:
+      POSTGRES_DB: 'roulette_db'
+      POSTGRES_USER: 'roulette_db'
+      POSTGRES_PASSWORD: 'root'
+    volumes:
+      - ./data/dump:/app/dump
+      - ./data/postgresql:/var/lib/postgresql/data
+
+volumes:
+  postgresql:
