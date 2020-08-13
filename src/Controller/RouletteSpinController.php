@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Round;
-use App\Entity\Spin;
 use App\Entity\User;
 use App\Exception\UserNotSetException;
 use App\Service\RouletteSpinner;
@@ -11,7 +9,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class RouletteSpinController extends JsonController
 {
@@ -22,12 +19,13 @@ class RouletteSpinController extends JsonController
 
     /**
      * RouletteSpinController constructor.
+     *
      * @param RouletteSpinner $rouletteSpinner
      */
     public function __construct(RouletteSpinner $rouletteSpinner)
     {
-        parent::__construct();
         $this->rouletteSpinner = $rouletteSpinner;
+        parent::__construct();
     }
 
     /**
@@ -37,7 +35,7 @@ class RouletteSpinController extends JsonController
      * @return JsonResponse
      *
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         /** @var User $user */
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy([

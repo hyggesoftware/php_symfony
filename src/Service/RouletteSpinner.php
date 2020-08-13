@@ -30,6 +30,11 @@ class RouletteSpinner
      */
     protected $spin;
 
+    /**
+     * RouletteSpinner constructor.
+     *
+     * @param EntityManagerInterface $em
+     */
     public function __construct(EntityManagerInterface $em){
         $this->em = $em;
         $this->spin = new Spin;
@@ -42,7 +47,7 @@ class RouletteSpinner
      *
      * @throws UserNotSetException
      */
-    public function spin()
+    public function spin(): ?Round
     {
         if (null === $this->user) {
            throw new UserNotSetException();
@@ -105,6 +110,9 @@ class RouletteSpinner
         return $availableCells[array_rand($availableCells)];
     }
 
+    /**
+     * Persist spin data to DB
+     */
     protected function persist(): void
     {
         // persist data

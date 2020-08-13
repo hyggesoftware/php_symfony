@@ -17,6 +17,9 @@ abstract class JsonController extends AbstractController
      */
     protected $serializer;
 
+    /**
+     * JsonController constructor.
+     */
     public function __construct()
     {
         $encoders = [new JsonEncoder()];
@@ -29,7 +32,7 @@ abstract class JsonController extends AbstractController
      * @param array $array
      * @return JsonResponse
      */
-    protected function responseArray(array $array)
+    protected function responseArray(array $array): JsonResponse
     {
         return JsonResponse::fromJsonString(
             $this->serializer->serialize($array, 'json', [
@@ -46,7 +49,7 @@ abstract class JsonController extends AbstractController
      *
      * @return JsonResponse
      */
-    protected function responseEntity($entity, array $ignoredAttributes = [])
+    protected function responseEntity($entity, array $ignoredAttributes = []): JsonResponse
     {
         return JsonResponse::fromJsonString(
             $this->serializer->serialize($entity, 'json', [
