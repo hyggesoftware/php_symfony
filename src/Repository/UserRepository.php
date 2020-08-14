@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Round;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\DBALException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +21,52 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Get active users (who have 1 or more rounds)
+     *
+    * @return User[] Returns an array of User objects
+    */
+    public function active()
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
+            ->leftJoin('u.rounds', 'r')
+            ->having('COUNT(r) > 0')
+            ->groupBy('u')
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?User
+    /**
+     * Get active users count by total rounds played
+     *
+     * @return array
+     *
+     * @throws DBALException
+     */
+    public function findCountByTotalRounds(): array
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+        $subQuery = $this->createQueryBuilder('u')
+            ->leftJoin('u.rounds', 'r')
+            ->having('COUNT(r) > 0')
+            ->groupBy('u')
+            ->select('u.id as id')
+            ->addSelect('COUNT(r) AS total_rounds')
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getSQL();
+
+        $conn = $this->getEntityManager()
+            ->getConnection();
+
+        $sql = '
+            SELECT users_rounds.sclr_1 as total_rounds, COUNT(users_rounds.id_0) AS users_count
+            FROM (' . $subQuery . ') AS users_rounds
+            GROUP BY total_rounds
+            ';
+        $stmt = $conn->prepare($sql);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
-    */
 }
