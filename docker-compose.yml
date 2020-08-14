@@ -29,7 +29,7 @@ services:
     image: postgres:9.6
     ports:
       - '5435:5432'
-    container_name: 'postgresql'
+    container_name: roulette_db
     working_dir: /app
     restart: always
     environment:

@@ -29,7 +29,7 @@ RUN apt-get update && \
         git \
         cron \
         nano \
-        mc \
+        mc
 
 #####################################
 # GD:
