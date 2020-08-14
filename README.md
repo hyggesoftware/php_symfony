@@ -33,19 +33,15 @@ $ php bin/console doctrine:fixtures:load
 
 The app will start on `http://localhost:8081`
 
-## API
+## API DOCS
 
-The API has 3 endpoints:
+#### Build apidocs
 
-#### GetUsersList
-`GET /users` Get list of app users
+```sh
+$ npm install apidoc -g
+$ apidoc -i docs/ -o public/apidoc/
+```
 
-#### RouletteSpin
-`POST /roulette/spin` Spin the roulette
+#### Explore API
 
-Request body:
-
-- `api_key` User's api_key
-
-#### GetStatistics
-`GET /statistics` Get statistics of roulette spins
+Navigate to `http://localhost:8081/apidoc`

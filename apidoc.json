@@ -1,0 +1,10 @@
+{
+  "name": "Symfony Roulette API",
+  "version": "0.1.0",
+  "title": "Symfony Roulette API",
+  "url": "http://localhost:8081/apidoc",
+  "description": "Documentation for Symfony Roulette REST API",
+  "template": {
+    "forceLanguage": "en"
+  }
+}
