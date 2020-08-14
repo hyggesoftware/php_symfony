@@ -62,11 +62,9 @@ class RouletteSpinner
 
         $this->startRound();
 
-        // Generating random cell to drop
         if ($this->getAvailableCells()) {
             $this->spin->setDroppedCell($this->generateDroppedCell());
         } else {
-            // It's a jackpot!
             $this->spin->setIsJackpot(true);
         }
 
@@ -83,7 +81,6 @@ class RouletteSpinner
     {
         $this->round = $this->user->getActiveRound();
 
-        // if user have no active rounds, create new one
         if (null === $this->round) {
             $this->startNewRound();
         }
@@ -134,7 +131,6 @@ class RouletteSpinner
      */
     protected function persist(): void
     {
-        // persist data
         $this->em->persist($this->spin);
 
         $this->round->addSpin($this->spin);

@@ -91,7 +91,6 @@ class User
     {
         if ($this->rounds->contains($round)) {
             $this->rounds->removeElement($round);
-            // set the owning side to null (unless already changed)
             if ($round->getUser() === $this) {
                 $round->setUser(null);
             }

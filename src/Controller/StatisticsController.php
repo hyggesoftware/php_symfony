@@ -6,7 +6,7 @@ use App\Service\Statistics;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RouletteStatisticsController extends JsonController
+class StatisticsController extends JsonController
 {
     /**
      * @var Statistics
@@ -14,7 +14,7 @@ class RouletteStatisticsController extends JsonController
     private $statistics;
 
     /**
-     * RouletteStatisticsController constructor.
+     * StatisticsController constructor.
      * @param Statistics $statistics
      */
     public function __construct(Statistics $statistics)
