@@ -25,8 +25,8 @@ class UserFixtures extends Fixture
     {
         foreach ($this->users as $username) {
             $user = new User;
-            $user->setEmail("$username@gmail.com");
-            $user->setApiKey(md5(random_bytes(16)));
+            $user->setEmail("$username@gmail.com")
+                ->setApiKey(md5(random_bytes(16)));
 
             $manager->persist($user);
         }

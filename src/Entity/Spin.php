@@ -10,9 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Spin
 {
-    public const CELLS = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-    ];
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -27,7 +24,8 @@ class Spin
     private $round;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity=RouletteCell::class, fetch="EAGER")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $dropped_cell;
 
@@ -53,12 +51,12 @@ class Spin
         return $this;
     }
 
-    public function getDroppedCell(): ?int
+    public function getDroppedCell(): ?RouletteCell
     {
         return $this->dropped_cell;
     }
 
-    public function setDroppedCell(?int $dropped_cell): self
+    public function setDroppedCell(?RouletteCell $dropped_cell): self
     {
         $this->dropped_cell = $dropped_cell;
 

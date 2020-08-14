@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\RouletteCell;
 use App\Entity\Round;
 use App\Entity\Spin;
 use App\Entity\User;
@@ -29,15 +30,21 @@ class RouletteSpinner
      * @var Spin
      */
     protected $spin;
+    /**
+     * @var RandomDistribution
+     */
+    private $randomDistribution;
 
     /**
      * RouletteSpinner constructor.
      *
      * @param EntityManagerInterface $em
+     * @param RandomDistribution $randomDistribution
      */
-    public function __construct(EntityManagerInterface $em){
+    public function __construct(EntityManagerInterface $em, RandomDistribution $randomDistribution){
         $this->em = $em;
         $this->spin = new Spin;
+        $this->randomDistribution = $randomDistribution;
     }
 
     /**
@@ -56,7 +63,7 @@ class RouletteSpinner
         $this->startRound();
 
         // Generating random cell to drop
-        if ($this->round->hasAvailableCells()) {
+        if ($this->getAvailableCells()) {
             $this->spin->setDroppedCell($this->generateDroppedCell());
         } else {
             // It's a jackpot!
@@ -102,12 +109,24 @@ class RouletteSpinner
     }
 
     /**
-     * @return int
+     *
+     * @return object|null
      */
-    protected function generateDroppedCell(): int
+    protected function generateDroppedCell(): ?RouletteCell
     {
-        $availableCells = $this->round->getAvailableCells();
-        return $availableCells[array_rand($availableCells)];
+        $availableCells = $this->getAvailableCells();
+        $weights = $this->em->getRepository(RouletteCell::class)->getWeightsMap();
+        $cellId = $this->randomDistribution->getRandomElementOfArray(array_column($availableCells, "id"), $weights);
+
+        return $this->em->getRepository(RouletteCell::class)->find($cellId);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAvailableCells()
+    {
+        return $this->em->getRepository(RouletteCell::class)->getAvailableForRound($this->round);
     }
 
     /**

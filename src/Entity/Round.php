@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\RouletteCellRepository;
 use App\Repository\RoundRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -92,25 +93,5 @@ class Round
         $lastSpin = $this->spins->last();
 
         return $lastSpin->getIsJackpot();
-    }
-
-    /**
-     * @return array
-     */
-    public function getAvailableCells(): array
-    {
-        $lockedCells = $this->spins->map(function (Spin $spin) {
-            return $spin->getDroppedCell();
-        })->toArray();
-
-        return array_diff(Spin::CELLS, $lockedCells);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasAvailableCells(): bool
-    {
-        return count($this->getAvailableCells()) > 0;
     }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Round;
-use App\Entity\User;
 use App\Service\Statistics;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
